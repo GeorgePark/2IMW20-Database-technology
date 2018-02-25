@@ -4,6 +4,8 @@
 
 #include "SimpleGraph.h"
 #include "SimpleEstimator.h"
+#include <list>
+#include <map>
 
 std::map<uint32_t , cardStat> first;
 
@@ -22,14 +24,33 @@ void SimpleEstimator::prepare() {
         first[noLabels] = test;
     }
 
+    std::list<uint32_t > hasLabel;
+
     for(int source = 0; source < graph->getNoVertices(); source++) {
         for (auto labelTarget : graph->adj[source]) {
 
             auto label = labelTarget.first;
 
             first[label].noPaths ++;
-
+            hasLabel.push_back(label);
         }
+        hasLabel.unique();
+        for(int label : hasLabel){
+            first[label].noOut++;
+        }
+        hasLabel.clear();
+
+        for (auto labelTarget : graph->reverse_adj[source]) {
+
+            auto label = labelTarget.first;
+
+            hasLabel.push_back(label);
+        }
+        hasLabel.unique();
+        for(int label : hasLabel){
+            first[label].noIn ++;
+        }
+        hasLabel.clear();
     }
 
 }
@@ -38,5 +59,34 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
 
     // perform your estimation here
 
-    return first[0];
+    // project out the label in the AST
+    std::regex directLabel (R"((\d+)\+)");
+    std::regex inverseLabel (R"((\d+)\-)");
+
+    std::smatch matches;
+
+    uint32_t label;
+    bool inverse;
+
+    if (q->isLeaf()) {
+        if (std::regex_search(q->data, matches, directLabel)) {
+            label = (uint32_t) std::stoul(matches[1]);
+            inverse = false;
+            std::cout << label;
+        } else if (std::regex_search(q->data, matches, inverseLabel)) {
+            label = (uint32_t) std::stoul(matches[1]);
+            inverse = true;
+            std::cout << label;
+        } else {
+            std::cerr << "Label parsing failed!" << std::endl;
+            return {0, 0, 0};
+        }
+    }
+
+    if (q->isConcat()) {
+        std::cout << "Reached is concat";
+        return SimpleEstimator::estimate(q->right);
+    }
+
+    return first[label];
 }
