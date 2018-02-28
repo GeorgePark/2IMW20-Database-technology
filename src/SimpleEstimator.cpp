@@ -72,11 +72,9 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
         if (std::regex_search(q->data, matches, directLabel)) {
             label = (uint32_t) std::stoul(matches[1]);
             inverse = false;
-            std::cout << label;
         } else if (std::regex_search(q->data, matches, inverseLabel)) {
             label = (uint32_t) std::stoul(matches[1]);
             inverse = true;
-            std::cout << label;
         } else {
             std::cerr << "Label parsing failed!" << std::endl;
             return {0, 0, 0};
@@ -84,8 +82,12 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
     }
 
     if (q->isConcat()) {
-        std::cout << "Reached is concat";
-        return SimpleEstimator::estimate(q->right);
+        // evaluate the children
+        auto leftGraph = SimpleEstimator::estimate(q->left);
+        auto rightGraph = SimpleEstimator::estimate(q->right);
+
+        return cardStat {std::min(leftGraph.noOut, rightGraph.noOut), leftGraph.noPaths + rightGraph.noPaths,
+                         std::min(leftGraph.noIn, rightGraph.noIn)};
     }
 
     return first[label];
