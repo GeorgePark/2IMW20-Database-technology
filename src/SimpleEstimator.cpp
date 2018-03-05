@@ -53,7 +53,6 @@ void SimpleEstimator::prepare() {
         }
         hasLabel.clear();
     }
-
 }
 
 cardStat SimpleEstimator::estimate(RPQTree *q) {
