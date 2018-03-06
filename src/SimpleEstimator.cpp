@@ -16,6 +16,10 @@ SimpleEstimator::SimpleEstimator(std::shared_ptr<SimpleGraph> &g){
     graph = g;
 }
 
+// project out the label in the AST
+std::regex directLabel (R"((\d+)\+)");
+std::regex inverseLabel (R"((\d+)\-)");
+
 void SimpleEstimator::prepare() {
 
     // do your prep here
@@ -59,10 +63,6 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
 
     // perform your estimation here
 
-    // project out the label in the AST
-    std::regex directLabel (R"((\d+)\+)");
-    std::regex inverseLabel (R"((\d+)\-)");
-
     std::smatch matches;
 
     uint32_t label;
@@ -86,8 +86,8 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
         auto leftGraph = SimpleEstimator::estimate(q->left);
         auto rightGraph = SimpleEstimator::estimate(q->right);
 
-        return cardStat {static_cast<uint32_t>(std::ceil((leftGraph.noOut + rightGraph.noOut) / 2)), leftGraph.noPaths + rightGraph.noPaths,
-                         static_cast<uint32_t>(std::ceil((leftGraph.noIn + rightGraph.noIn) / 2))};
+        return cardStat {(leftGraph.noOut + rightGraph.noOut) / 2, leftGraph.noPaths + rightGraph.noPaths,
+                        (leftGraph.noIn + rightGraph.noIn) / 2};
     }
     // std::min(leftGraph.noIn, rightGraph.noIn)
     // static_cast<uint32_t>(std::ceil((leftGraph.noOut + rightGraph.noOut) / 2))
