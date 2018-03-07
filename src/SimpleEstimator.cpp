@@ -86,7 +86,7 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
         auto leftGraph = SimpleEstimator::estimate(q->left);
         auto rightGraph = SimpleEstimator::estimate(q->right);
 
-        return cardStat {(leftGraph.noOut + rightGraph.noOut) / 2, leftGraph.noPaths + rightGraph.noPaths * (rightGraph.noPaths/rightGraph.noOut),
+        return cardStat {(leftGraph.noOut + rightGraph.noOut) / 2, leftGraph.noPaths + rightGraph.noPaths * (leftGraph.noPaths/leftGraph.noOut),
                         (leftGraph.noIn + rightGraph.noIn) / 2};
     }
     // std::min(leftGraph.noIn, rightGraph.noIn)
