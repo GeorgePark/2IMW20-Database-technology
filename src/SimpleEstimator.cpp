@@ -8,8 +8,6 @@
 #include <map>
 #include "cmath"
 
-std::map<uint32_t , cardStat> first;
-
 SimpleEstimator::SimpleEstimator(std::shared_ptr<SimpleGraph> &g){
 
     // works only with SimpleGraph
@@ -26,7 +24,7 @@ void SimpleEstimator::prepare() {
 
     for(int noLabels = 0; noLabels < graph -> getNoLabels(); noLabels++) {
         cardStat test {0,0,0};
-        first[noLabels] = test;
+        est_result[noLabels] = test;
     }
 
     std::list<uint32_t > hasLabel;
@@ -36,12 +34,12 @@ void SimpleEstimator::prepare() {
 
             auto label = labelTarget.first;
 
-            first[label].noPaths ++;
+            est_result[label].noPaths ++;
             hasLabel.push_back(label);
         }
         hasLabel.unique();
         for(int label : hasLabel){
-            first[label].noOut++;
+            est_result[label].noOut++;
         }
         hasLabel.clear();
 
@@ -53,7 +51,7 @@ void SimpleEstimator::prepare() {
         }
         hasLabel.unique();
         for(int label : hasLabel){
-            first[label].noIn ++;
+            est_result[label].noIn ++;
         }
         hasLabel.clear();
     }
@@ -63,10 +61,12 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
 
     // perform your estimation here
 
+    // project out the label in the AST
+
     std::smatch matches;
 
     uint32_t label;
-    bool inverse;
+    bool inverse = false;
 
     if (q->isLeaf()) {
         if (std::regex_search(q->data, matches, directLabel)) {
@@ -83,19 +83,36 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
 
     if (q->isConcat()) {
         // evaluate the children
-        auto leftGraph = SimpleEstimator::estimate(q->left);
-        auto rightGraph = SimpleEstimator::estimate(q->right);
+        cardStat leftGraph;
+        cardStat rightGraph;
 
-        return cardStat {(leftGraph.noOut + rightGraph.noOut) / 2, leftGraph.noPaths + rightGraph.noPaths * (leftGraph.noPaths/leftGraph.noOut),
-                        (leftGraph.noIn + rightGraph.noIn) / 2};
+        /*if (!inverse) {*/
+            leftGraph = SimpleEstimator::estimate(q->left);
+            rightGraph = SimpleEstimator::estimate(q->right);/*
+        }
+        else {
+            leftGraph = SimpleEstimator::estimate(q->right);
+            rightGraph = SimpleEstimator::estimate(q->left);
+        }*/
+
+        //float result = leftGraph.noPaths * (leftGraph.noIn * (float(rightGraph.noOut) / (float)(graph->getNoVertices())) * ((float)(rightGraph.noPaths) / (float)(rightGraph.noOut)));
+
+        //float result1 = (float)(leftGraph.noPaths * rightGraph.noPaths) / (float)(leftGraph.noOut);
+        //float result2 = (float)(leftGraph.noPaths * rightGraph.noPaths) / (float)(rightGraph.noOut);
+        //uint32_t final_result = std::min((int)(result1), (int)(result2));
+        uint32_t result1 = (leftGraph.noPaths * rightGraph.noPaths) / leftGraph.noOut;
+        uint32_t result2 = (leftGraph.noPaths * rightGraph.noPaths) / rightGraph.noOut;
+
+        return cardStat {std::min(leftGraph.noOut, rightGraph.noOut), std::min(result1, result2),
+                         std::min(leftGraph.noIn, rightGraph.noIn)};
     }
-    // std::min(leftGraph.noIn, rightGraph.noIn)
-    // static_cast<uint32_t>(std::ceil((leftGraph.noOut + rightGraph.noOut) / 2))
 
     if (inverse) {
-        cardStat inverseCardstat = {first[label].noIn, first[label].noPaths, first[label].noOut};
-        return inverseCardstat;
+        cardStat inverseCardStat = {0, est_result[label].noPaths, 0};
+        inverseCardStat.noOut = est_result[label].noIn;
+        inverseCardStat.noIn = est_result[label].noOut;
+        return inverseCardStat;
     } else {
-        return first[label];
+        return est_result[label];
     }
 }

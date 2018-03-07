@@ -11,6 +11,7 @@
 class SimpleEstimator : public Estimator {
 
     std::shared_ptr<SimpleGraph> graph;
+    std::map<uint32_t , cardStat> est_result;
 
 public:
     explicit SimpleEstimator(std::shared_ptr<SimpleGraph> &g);
