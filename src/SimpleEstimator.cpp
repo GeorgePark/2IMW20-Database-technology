@@ -86,11 +86,16 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
         auto leftGraph = SimpleEstimator::estimate(q->left);
         auto rightGraph = SimpleEstimator::estimate(q->right);
 
-        return cardStat {(leftGraph.noOut + rightGraph.noOut) / 2, leftGraph.noPaths + rightGraph.noPaths,
+        return cardStat {(leftGraph.noOut + rightGraph.noOut) / 2, leftGraph.noPaths + rightGraph.noPaths * (rightGraph.noPaths/rightGraph.noOut),
                         (leftGraph.noIn + rightGraph.noIn) / 2};
     }
     // std::min(leftGraph.noIn, rightGraph.noIn)
     // static_cast<uint32_t>(std::ceil((leftGraph.noOut + rightGraph.noOut) / 2))
 
-    return first[label];
+    if (inverse) {
+        cardStat inverseCardstat = {first[label].noIn, first[label].noPaths, first[label].noOut};
+        return inverseCardstat;
+    } else {
+        return first[label];
+    }
 }
