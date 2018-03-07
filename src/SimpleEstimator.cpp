@@ -68,29 +68,14 @@ void SimpleEstimator::prepare() {
         for (auto labelSource : graph->adj[source]) {
             est_result[labelSource.first].noPaths++;
             //edgesPerLabel[labelSource.first]++;
-            hasLabel.push_back(labelSource.first);
         }
-        hasLabel.unique();
-        for (int label : hasLabel) {
-            est_result[label].noOut++;
-        }
-        hasLabel.clear();
-
-        for (auto labelSource : graph->reverse_adj[source]) {
-            hasLabel.push_back(labelSource.first);
-        }
-        hasLabel.unique();
-        for (int label : hasLabel) {
-            est_result[label].noIn++;
-        }
-        hasLabel.clear();
     }
-    /*
+
     for (int noLabels = 0; noLabels < graph->getNoLabels(); noLabels++) {
         uint32_t helper = (uint32_t)(((float)(est_result[noLabels].noPaths) / (float)(graph->getNoEdges())) * graph->getNoVertices());
         est_result[noLabels].noOut = helper;
         est_result[noLabels].noIn = helper;
-    }*/
+    }
 
 }
 
