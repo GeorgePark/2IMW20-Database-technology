@@ -22,39 +22,59 @@ void SimpleEstimator::prepare() {
 
     // do your prep here
 
-    for(int noLabels = 0; noLabels < graph -> getNoLabels(); noLabels++) {
-        cardStat test {0,0,0};
-        est_result[noLabels] = test;
+    //int edgesPerLabel [graph->getNoLabels()];
+    //int inDegreePerLabel [graph->getNoLabels()];
+    //int outDegreePerLabel [graph->getNoLabels()];
+
+    std::list<uint32_t> uniqueNodesForLabel;
+
+    for(int noLabels = 0; noLabels < graph->getNoLabels(); noLabels++) {
+        est_result[noLabels] = cardStat {0, 0, 0};
+
+        //edgesPerLabel[noLabels] = 0;
+        //inDegreePerLabel[noLabels] = 0;
+        //outDegreePerLabel[noLabels] = 0;
+
+        /*for (int source = 0; source < graph->getNoVertices(); source++) {
+            for (auto labelSource : graph->adj[source]) {
+                bool found = (std::find(uniqueNodesForLabel.begin(), uniqueNodesForLabel.end(), labelSource.second) !=
+                              uniqueNodesForLabel.end());
+                if (labelSource.first == noLabels && !found) {
+                    est_result[noLabels].noIn++;
+                    //outDegreePerLabel[noLabels]++;
+                    uniqueNodesForLabel.push_back(labelSource.second);
+                }
+            }
+        }
+        uniqueNodesForLabel.clear();
+        for (int target = 0; target < graph->getNoVertices(); target++) {
+            for (auto labelTarget : graph->reverse_adj[target]) {
+                bool found = (std::find(uniqueNodesForLabel.begin(), uniqueNodesForLabel.end(), labelTarget.second) !=
+                              uniqueNodesForLabel.end());
+                if (labelTarget.first == noLabels && !found) {
+                    est_result[noLabels].noOut++;
+                    //inDegreePerLabel[noLabels]++;
+                    uniqueNodesForLabel.push_back(labelTarget.second);
+                }
+            }
+        }
+        uniqueNodesForLabel.clear();*/
+
     }
 
-    std::list<uint32_t > hasLabel;
-
-    for(int source = 0; source < graph->getNoVertices(); source++) {
-        for (auto labelTarget : graph->adj[source]) {
-
-            auto label = labelTarget.first;
-
-            est_result[label].noPaths ++;
-            hasLabel.push_back(label);
+    for (int source = 0; source < graph->getNoVertices(); source++) {
+        for (auto labelSource : graph->adj[source]) {
+            est_result[labelSource.first].noPaths++;
+            //edgesPerLabel[labelSource.first]++;
         }
-        hasLabel.unique();
-        for(int label : hasLabel){
-            est_result[label].noOut++;
-        }
-        hasLabel.clear();
-
-        for (auto labelTarget : graph->reverse_adj[source]) {
-
-            auto label = labelTarget.first;
-
-            hasLabel.push_back(label);
-        }
-        hasLabel.unique();
-        for(int label : hasLabel){
-            est_result[label].noIn ++;
-        }
-        hasLabel.clear();
     }
+
+    for (int noLabels = 0; noLabels < graph->getNoLabels(); noLabels++) {
+        uint32_t helper = (uint32_t)(((float)(est_result[noLabels].noPaths) / (float)(graph->getNoEdges())) * graph->getNoVertices());
+        est_result[noLabels].noOut = helper;
+        est_result[noLabels].noIn = helper;
+    }
+
 }
 
 cardStat SimpleEstimator::estimate(RPQTree *q) {
