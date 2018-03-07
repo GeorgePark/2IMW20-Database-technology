@@ -121,14 +121,9 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
         cardStat leftGraph;
         cardStat rightGraph;
 
-        if (!inverse) {
-            leftGraph = SimpleEstimator::estimate(q->left);
-            rightGraph = SimpleEstimator::estimate(q->right);
-        }
-        else {
-            leftGraph = SimpleEstimator::estimate(q->right);
-            rightGraph = SimpleEstimator::estimate(q->left);
-        }
+        leftGraph = SimpleEstimator::estimate(q->left);
+        rightGraph = SimpleEstimator::estimate(q->right);
+
 
         //float result = leftGraph.noPaths * (leftGraph.noIn * (float(rightGraph.noOut) / (float)(graph->getNoVertices())) * ((float)(rightGraph.noPaths) / (float)(rightGraph.noOut)));
 
@@ -142,6 +137,11 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
                          std::min(leftGraph.noIn, rightGraph.noIn)};
     }
 
-    return est_result[label];
+    if (inverse) {
+        cardStat inverseStats = {est_result[label].noIn, est_result[label].noPaths, est_result[label].noOut};
+        return est_result[label];
+    } else {
+        return est_result[label];
+    }
 
 }
