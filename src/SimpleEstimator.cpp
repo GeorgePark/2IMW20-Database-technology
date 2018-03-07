@@ -70,14 +70,18 @@ void SimpleEstimator::prepare() {
             //edgesPerLabel[labelSource.first]++;
             hasLabel[labelSource.first].insert(labelSource.second);
         }
-
-        for (auto labelSource : graph->reverse_adj[source]) {
-            hasLabelReverse[labelSource.first].insert(labelSource.second);
-        }
     }
     for (int noLabels = 0; noLabels < graph->getNoLabels(); noLabels++) {
         est_result[noLabels].noIn = hasLabel[noLabels].size();
-        est_result[noLabels].noOut = hasLabelReverse[noLabels].size();
+    }
+    hasLabel.clear();
+    for (int source = 0; source < graph->getNoVertices(); source++) {
+        for (auto labelSource : graph->reverse_adj[source]) {
+            hasLabel[labelSource.first].insert(labelSource.second);
+        }
+    }
+    for (int noLabels = 0; noLabels < graph->getNoLabels(); noLabels++) {
+        est_result[noLabels].noOut = hasLabel[noLabels].size();
     }
     /*
     for (int noLabels = 0; noLabels < graph->getNoLabels(); noLabels++) {
