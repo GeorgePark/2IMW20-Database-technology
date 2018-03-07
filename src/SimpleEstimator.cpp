@@ -37,7 +37,7 @@ void SimpleEstimator::prepare() {
         //inDegreePerLabel[noLabels] = 0;
         //outDegreePerLabel[noLabels] = 0;
 
-        /*for (int source = 0; source < graph->getNoVertices(); source++) {
+        for (int source = 0; source < graph->getNoVertices(); source++) {
             for (auto labelSource : graph->adj[source]) {
                 bool found = (std::find(uniqueNodesForLabel.begin(), uniqueNodesForLabel.end(), labelSource.second) !=
                               uniqueNodesForLabel.end());
@@ -60,7 +60,7 @@ void SimpleEstimator::prepare() {
                 }
             }
         }
-        uniqueNodesForLabel.clear();*/
+        uniqueNodesForLabel.clear();
 
     }
 
@@ -70,12 +70,12 @@ void SimpleEstimator::prepare() {
             //edgesPerLabel[labelSource.first]++;
         }
     }
-
+/*
     for (int noLabels = 0; noLabels < graph->getNoLabels(); noLabels++) {
         uint32_t helper = (uint32_t)(((float)(est_result[noLabels].noPaths) / (float)(graph->getNoEdges())) * graph->getNoVertices());
         est_result[noLabels].noOut = helper;
         est_result[noLabels].noIn = helper;
-    }
+    }*/
 
 }
 
