@@ -139,7 +139,7 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
 
     if (inverse) {
         cardStat inverseStats = {est_result[label].noIn, est_result[label].noPaths, est_result[label].noOut};
-        return est_result[label];
+        return inverseStats;
     } else {
         return est_result[label];
     }
