@@ -54,14 +54,17 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
     // perform your estimation here
 
     std::smatch matches;
+    bool inverse = false;
 
     uint32_t label;
 
     if (q->isLeaf()) {
         if (std::regex_search(q->data, matches, directLabel)) {
             label = (uint32_t) std::stoul(matches[1]);
+            inverse = false;
         } else if (std::regex_search(q->data, matches, inverseLabel)) {
             label = (uint32_t) std::stoul(matches[1]);
+            inverse = true;
         } else {
             std::cerr << "Label parsing failed!" << std::endl;
             return {0, 0, 0};
@@ -79,10 +82,13 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
         uint32_t result1 = (leftGraph.noPaths * rightGraph.noPaths) / leftGraph.noOut;
         uint32_t result2 = (leftGraph.noPaths * rightGraph.noPaths) / rightGraph.noOut;
 
-        return cardStat {std::min(leftGraph.noOut, rightGraph.noOut), std::min(result1, result2),
-                         std::min(leftGraph.noIn, rightGraph.noIn)};
+        return cardStat {(leftGraph.noOut + rightGraph.noOut) / 2, std::min(result1, result2),
+                        (leftGraph.noIn + rightGraph.noIn) / 2};
     }
 
-    return est_result[label];
-
+    if (inverse) {
+        return {est_result[label].noIn, est_result[label].noPaths, est_result[label].noOut};
+    } else{
+        return est_result[label];
+    }
 }
