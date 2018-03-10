@@ -24,8 +24,6 @@ void SimpleEstimator::prepare() {
 
     // do your prep here
 
-    std::list<uint32_t> uniqueNodesForLabel;
-
     for(int noLabels = 0; noLabels < graph->getNoLabels(); noLabels++) {
         est_result[noLabels] = cardStat {0, 0, 0};
     }
@@ -33,7 +31,6 @@ void SimpleEstimator::prepare() {
     for (int source = 0; source < graph->getNoVertices(); source++) {
         for (auto labelSource : graph->adj[source]) {
             est_result[labelSource.first].noPaths++;
-            //edgesPerLabel[labelSource.first]++;
             hasLabel[labelSource.first].insert(labelSource.second);
         }
     }
@@ -55,8 +52,6 @@ void SimpleEstimator::prepare() {
 cardStat SimpleEstimator::estimate(RPQTree *q) {
 
     // perform your estimation here
-
-    // project out the label in the AST
 
     std::smatch matches;
 
@@ -87,7 +82,6 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
         return cardStat {std::min(leftGraph.noOut, rightGraph.noOut), std::min(result1, result2),
                          std::min(leftGraph.noIn, rightGraph.noIn)};
     }
-
 
     return est_result[label];
 
