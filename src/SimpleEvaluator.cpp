@@ -40,11 +40,6 @@ cardStat SimpleEvaluator::computeStats(std::shared_ptr<SimpleGraph> &g) {
 
     stats.noPaths = g->getNoDistinctEdges();
 
-    /*
-    for(int target = 0; target < g->getNoVertices(); target++) {
-        if(!g->reverse_adj[target].empty()) stats.noIn++;
-    }*/
-
     return stats;
 }
 
@@ -107,6 +102,7 @@ std::shared_ptr<SimpleGraph> SimpleEvaluator::join(std::shared_ptr<SimpleGraph> 
 std::shared_ptr<SimpleGraph> SimpleEvaluator::evaluate_aux(RPQTree *q) {
 
     // evaluate according to the AST bottom-up
+    // Look into finding a better order with the estimator
 
     if(q->isLeaf()) {
 
