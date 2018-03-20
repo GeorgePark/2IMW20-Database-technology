@@ -25,7 +25,7 @@ uint32_t SimpleGraph::getNoEdges() const {
     return sum;
 }
 
-// sort on the second item in the pair, then on the first (ascending order)
+// sort on the second item in the pair, then on the cardStats (ascending order)
 bool sortPairs(const std::pair<uint32_t,uint32_t> &a, const std::pair<uint32_t,uint32_t> &b) {
     if (a.second < b.second) return true;
     if (a.second == b.second) return a.first < b.first;
