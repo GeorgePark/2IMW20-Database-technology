@@ -82,7 +82,7 @@ std::shared_ptr<SimpleGraph> SimpleEvaluator::join(std::shared_ptr<SimpleGraph> 
     auto out = std::make_shared<SimpleGraph>(left->getNoVertices());
     out->setNoLabels(1);
 
-    for(uint32_t leftSource = 0; leftSource < left->getNoVertices(); leftSource++) {
+    for (uint32_t leftSource = 0; leftSource < left->getNoVertices(); leftSource++) {
         for (auto labelTarget : left->adj[leftSource]) {
 
             int leftTarget = labelTarget.second;
@@ -95,15 +95,11 @@ std::shared_ptr<SimpleGraph> SimpleEvaluator::join(std::shared_ptr<SimpleGraph> 
             }
         }
     }
-
     return out;
 }
-
 std::shared_ptr<SimpleGraph> SimpleEvaluator::evaluate_aux(RPQTree *q) {
 
     // evaluate according to the AST bottom-up
-    // Look into finding a better order with the estimator
-
     if(q->isLeaf()) {
 
         std::smatch matches;
@@ -140,6 +136,15 @@ std::shared_ptr<SimpleGraph> SimpleEvaluator::evaluate_aux(RPQTree *q) {
 }
 
 cardStat SimpleEvaluator::evaluate(RPQTree *query) {
-    auto res = evaluate_aux(query);
-    return SimpleEvaluator::computeStats(res);
+    // Check if a query is at least 3 long first
+    if (query->isConcat()){
+        if (query->left->isConcat() || query->right->isConcat()){
+            //TODO: Create a 'better' query using the estimator to find an order for joining
+            auto res = evaluate_aux(query);
+            return SimpleEvaluator::computeStats(res);
+        }
+    } else {
+        auto res = evaluate_aux(query);
+        return SimpleEvaluator::computeStats(res);
+    }
 }

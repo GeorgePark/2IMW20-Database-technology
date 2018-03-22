@@ -95,20 +95,8 @@ void SimpleGraph::readFromContiguousFile(const std::string &fileName) {
         throw std::runtime_error(std::string("Invalid graph header!"));
     }
 
-    std::stringstream buffer;
-    buffer << graphFile.rdbuf();
-    graphFile.close();
+    //TODO: Do quicker loading using strtok?
 
-    while(std::getline(buffer, line)){
-        if(std::regex_search(line, matches, edgePat)) {
-            uint32_t subject = (uint32_t) std::stoul(matches[1]);
-            uint32_t predicate = (uint32_t) std::stoul(matches[2]);
-            uint32_t object = (uint32_t) std::stoul(matches[3]);
-
-            addEdge(subject, object, predicate);
-        }
-    }
-/*
     // parse edge data
     while(std::getline(graphFile, line)) {
 
@@ -119,5 +107,6 @@ void SimpleGraph::readFromContiguousFile(const std::string &fileName) {
 
             addEdge(subject, object, predicate);
         }
-    }*/
+    }
+    graphFile.close();
 }
