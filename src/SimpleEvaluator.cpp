@@ -140,11 +140,8 @@ cardStat SimpleEvaluator::evaluate(RPQTree *query) {
     if (query->isConcat()){
         if (query->left->isConcat() || query->right->isConcat()){
             //TODO: Create a 'better' query using the estimator to find an order for joining
-            auto res = evaluate_aux(query);
-            return SimpleEvaluator::computeStats(res);
         }
-    } else {
-        auto res = evaluate_aux(query);
-        return SimpleEvaluator::computeStats(res);
     }
+    auto res = evaluate_aux(query);
+    return SimpleEvaluator::computeStats(res);
 }
