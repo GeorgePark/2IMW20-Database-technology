@@ -5,8 +5,10 @@
 #include "SimpleGraph.h"
 #include "SimpleEstimator.h"
 #include <list>
-#include <set>
-#include "cmath"
+#include <map>
+
+std::regex directLabel (R"((\d+)\+)");
+std::regex inverseLabel (R"((\d+)\-)");
 
 SimpleEstimator::SimpleEstimator(std::shared_ptr<SimpleGraph> &g){
 
@@ -14,15 +16,10 @@ SimpleEstimator::SimpleEstimator(std::shared_ptr<SimpleGraph> &g){
     graph = g;
 }
 
-// project out the label in the AST
-std::regex directLabel (R"((\d+)\+)");
-std::regex inverseLabel (R"((\d+)\-)");
-
-
-
 void SimpleEstimator::prepare() {
 
     // do your prep here
+    std::list<uint32_t> uniqueNodesForLabel;
 
     for(int noLabels = 0; noLabels < graph->getNoLabels(); noLabels++) {
         est_result[noLabels] = cardStat {0, 0, 0};
@@ -31,20 +28,13 @@ void SimpleEstimator::prepare() {
     for (int source = 0; source < graph->getNoVertices(); source++) {
         for (auto labelSource : graph->adj[source]) {
             est_result[labelSource.first].noPaths++;
-            hasLabel[labelSource.first].insert(labelSource.second);
         }
     }
+
     for (int noLabels = 0; noLabels < graph->getNoLabels(); noLabels++) {
-        est_result[noLabels].noIn = hasLabel[noLabels].size();
-    }
-    hasLabel.clear();
-    for (int source = 0; source < graph->getNoVertices(); source++) {
-        for (auto labelSource : graph->reverse_adj[source]) {
-            hasLabel[labelSource.first].insert(labelSource.second);
-        }
-    }
-    for (int noLabels = 0; noLabels < graph->getNoLabels(); noLabels++) {
-        est_result[noLabels].noOut = hasLabel[noLabels].size();
+        uint32_t helper = (uint32_t)(((float)(est_result[noLabels].noPaths) / (float)(graph->getNoEdges())) * graph->getNoVertices());
+        est_result[noLabels].noOut = helper;
+        est_result[noLabels].noIn = helper;
     }
 
 }
@@ -53,15 +43,20 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
 
     // perform your estimation here
 
+    // project out the label in the AST
+
     std::smatch matches;
 
     uint32_t label;
+    bool inverse = false;
 
     if (q->isLeaf()) {
         if (std::regex_search(q->data, matches, directLabel)) {
             label = (uint32_t) std::stoul(matches[1]);
+            inverse = false;
         } else if (std::regex_search(q->data, matches, inverseLabel)) {
             label = (uint32_t) std::stoul(matches[1]);
+            inverse = true;
         } else {
             std::cerr << "Label parsing failed!" << std::endl;
             return {0, 0, 0};
@@ -73,9 +68,14 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
         cardStat leftGraph;
         cardStat rightGraph;
 
-        leftGraph = SimpleEstimator::estimate(q->left);
-        rightGraph = SimpleEstimator::estimate(q->right);
-
+        if (!inverse) {
+            leftGraph = SimpleEstimator::estimate(q->left);
+            rightGraph = SimpleEstimator::estimate(q->right);
+        }
+        else {
+            leftGraph = SimpleEstimator::estimate(q->right);
+            rightGraph = SimpleEstimator::estimate(q->left);
+        }
         uint32_t result1 = (leftGraph.noPaths * rightGraph.noPaths) / leftGraph.noOut;
         uint32_t result2 = (leftGraph.noPaths * rightGraph.noPaths) / rightGraph.noOut;
 
@@ -84,5 +84,4 @@ cardStat SimpleEstimator::estimate(RPQTree *q) {
     }
 
     return est_result[label];
-
 }

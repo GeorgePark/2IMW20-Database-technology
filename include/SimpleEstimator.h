@@ -14,7 +14,6 @@ class SimpleEstimator : public Estimator {
 
     std::shared_ptr<SimpleGraph> graph;
     std::map<uint32_t, cardStat> est_result;
-    std::map<uint32_t , std::set<uint32_t>> hasLabel;
 
 public:
     explicit SimpleEstimator(std::shared_ptr<SimpleGraph> &g);
