@@ -12,6 +12,7 @@
 #include "RPQTree.h"
 #include "Evaluator.h"
 #include "Graph.h"
+#include <list>
 
 class SimpleEvaluator : public Evaluator {
 
@@ -34,6 +35,7 @@ public:
 
     static cardStat computeStats(std::shared_ptr<SimpleGraph> &g);
 
+    std::list<RPQTree *> leaves(RPQTree *query);
 };
 
 
