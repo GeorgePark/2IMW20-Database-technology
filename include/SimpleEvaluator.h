@@ -35,7 +35,7 @@ public:
 
     static cardStat computeStats(std::shared_ptr<SimpleGraph> &g);
 
-    std::list<RPQTree *> leaves(RPQTree *query);
+    std::vector<RPQTree *> leaves(RPQTree *query);
 };
 
 

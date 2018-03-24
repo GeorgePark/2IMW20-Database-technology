@@ -139,36 +139,27 @@ std::shared_ptr<SimpleGraph> SimpleEvaluator::evaluate_aux(RPQTree *q) {
 }
 
 cardStat SimpleEvaluator::evaluate(RPQTree *query) {
-    // Check if a query is at least 3 long first
-    if (query->isConcat()) {
-        if (query->left->isConcat() || query->right->isConcat()) {
-            //TODO: Create a 'better' query using the estimator to find an order for joining
-            std::cout << "Hello\n";
-            for (auto leaf : leaves(query)) {
-                std::cout << leaf;
-            }
-            std::cout << "\n";
-        }
-    }
     auto res = evaluate_aux(query);
     return SimpleEvaluator::computeStats(res);
 }
 
 // Function to get a list of all the leaves of a query
-std::list<RPQTree *> SimpleEvaluator::leaves(RPQTree *query) {
+std::vector<RPQTree *> SimpleEvaluator::leaves(RPQTree *query) {
+    // Vector containing the leaves of a RPQTree
+    std::vector<RPQTree *> leafs;
     if (query->isLeaf()) {
-        std::list<RPQTree *> leaf;
-        leaf.emplace_back(query);
-        return leaf;
+        leafs.emplace_back(query);
+        return leafs;
     }
-    std::list<RPQTree *> leafs;
+    // Vector containing the return value of a previous call
+    std::vector<RPQTree *> ret;
 
     // Get the leaves from left to right and add them to the list.
-    leaves(query->left);
-    /*leafs.insert(position, List.begin(), List.end());*/
+    ret = leaves(query->left);
+    leafs.insert(leafs.end(), ret.begin(), ret.end());
 
-    leaves(query->right);
-    /*leafs.insert(position, List.begin(), List.end());*/
+    ret = leaves(query->right);
+    leafs.insert(leafs.end(), ret.begin(), ret.end());
 
     return leafs;
 }
