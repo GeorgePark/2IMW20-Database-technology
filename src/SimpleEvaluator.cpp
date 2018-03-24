@@ -139,6 +139,7 @@ std::shared_ptr<SimpleGraph> SimpleEvaluator::evaluate_aux(RPQTree *q) {
 }
 
 cardStat SimpleEvaluator::evaluate(RPQTree *query) {
+    //TODO: Look into perhaps using caching
     uint32_t highest = UINT32_MAX;
     auto leafs = leaves(query);
     auto combinations = gen_combinations(leafs);
