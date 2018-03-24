@@ -139,6 +139,16 @@ std::shared_ptr<SimpleGraph> SimpleEvaluator::evaluate_aux(RPQTree *q) {
 }
 
 cardStat SimpleEvaluator::evaluate(RPQTree *query) {
+    uint32_t highest = UINT32_MAX;
+    auto leafs = leaves(query);
+    auto combinations = gen_combinations(leafs);
+    for (auto item : combinations) {
+        uint32_t current = est->estimate(item).noPaths;
+        if (current < highest) {
+            query = item;
+            highest = current;
+        }
+    }
     auto res = evaluate_aux(query);
     return SimpleEvaluator::computeStats(res);
 }
@@ -164,23 +174,28 @@ std::vector<RPQTree *> SimpleEvaluator::leaves(RPQTree *query) {
     return leafs;
 }
 
-/*TODO: Implement the following:
- * labels = ["0+", "1+", "2+", "2+", "3+", "4+"]
+std::vector<RPQTree *> SimpleEvaluator::gen_combinations(std::vector<RPQTree *> query) {
+    std::vector<RPQTree *> combinations;
 
-def generateCombinations(sublist):
-    results = []
+    // If there is only one item remaining in the vector, return it
+    if (query.size() < 2) {
+        return query;
+    }
 
-    if len(sublist) == 1: return sublist
+    for (int i = 1; i < query.size(); i++) {
+        std::vector<RPQTree *> split_left(query.begin(), query.begin() + i);
+        std::vector<RPQTree *> split_right(query.begin() + i, query.end());
 
-    for i in range(1, len(sublist)):
-        a = generateCombinations(sublist[:i])
-        b = generateCombinations(sublist[i:])
+        auto left = gen_combinations(split_left);
+        auto right = gen_combinations(split_right);
 
-        for r in a:
-            for s in b:
-                results += ["(" + r + "/" + s + ")"]
-
-    return results
-
-results = generateCombinations(labels)
- */
+        for (auto left_item : left) {
+            for (auto right_item : right) {
+                std::string data = "/";
+                RPQTree *comb = new RPQTree(data, left_item, right_item);
+                combinations.emplace_back(comb);
+            }
+        }
+    }
+    return combinations;
+}
