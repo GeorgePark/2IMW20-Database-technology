@@ -13,6 +13,7 @@
 #include "Evaluator.h"
 #include "Graph.h"
 #include <list>
+#include <map>
 
 class SimpleEvaluator : public Evaluator {
 
@@ -20,6 +21,8 @@ class SimpleEvaluator : public Evaluator {
     std::shared_ptr<SimpleEstimator> est;
 
 public:
+
+    std::map<std::string, RPQTree *> cache;
 
     explicit SimpleEvaluator(std::shared_ptr<SimpleGraph> &g);
     ~SimpleEvaluator() = default;

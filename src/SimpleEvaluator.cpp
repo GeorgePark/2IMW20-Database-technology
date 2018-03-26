@@ -141,8 +141,15 @@ std::shared_ptr<SimpleGraph> SimpleEvaluator::evaluate_aux(RPQTree *q) {
 cardStat SimpleEvaluator::evaluate(RPQTree *query) {
     //TODO: Look into perhaps using caching
     uint32_t highest = UINT32_MAX;
-    auto leafs = leaves(query);
-    auto combinations = gen_combinations(leafs);
+    std::vector<RPQTree *> leafs = leaves(query);
+    std::string data;
+    for (auto item : leafs) {
+        data += item->data;
+    }
+    if (cache[data]) {
+        //TODO: Get this working
+    }
+    std::vector<RPQTree *> combinations = gen_combinations(leafs);
     for (auto item : combinations) {
         uint32_t current = est->estimate(item).noPaths;
         if (current < highest) {
@@ -150,6 +157,7 @@ cardStat SimpleEvaluator::evaluate(RPQTree *query) {
             highest = current;
         }
     }
+    cache[data] = query;
     auto res = evaluate_aux(query);
     return SimpleEvaluator::computeStats(res);
 }
