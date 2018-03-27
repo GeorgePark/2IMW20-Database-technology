@@ -25,15 +25,23 @@ public:
     std::map<std::string, RPQTree *> cache;
 
     explicit SimpleEvaluator(std::shared_ptr<SimpleGraph> &g);
-    ~SimpleEvaluator() = default;
 
-    void prepare() override ;
-    cardStat evaluate(RPQTree *query) override ;
+    ~SimpleEvaluator() {
+        for (auto &it : cache) {
+            delete it.second;
+        }
+    }
+
+    void prepare() override;
+
+    cardStat evaluate(RPQTree *query) override;
 
     void attachEstimator(std::shared_ptr<SimpleEstimator> &e);
 
     std::shared_ptr<SimpleGraph> evaluate_aux(RPQTree *q);
+
     static std::shared_ptr<SimpleGraph> project(uint32_t label, bool inverse, std::shared_ptr<SimpleGraph> &g);
+
     static std::shared_ptr<SimpleGraph> join(std::shared_ptr<SimpleGraph> &left, std::shared_ptr<SimpleGraph> &right);
 
     static cardStat computeStats(std::shared_ptr<SimpleGraph> &g);

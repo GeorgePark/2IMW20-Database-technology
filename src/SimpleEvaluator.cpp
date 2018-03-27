@@ -148,19 +148,22 @@ cardStat SimpleEvaluator::evaluate(RPQTree *query) {
     }
     if (cache[data]) {
         //TODO: Get this working
-    }
-    RPQTree *newQuery;
-    std::vector<RPQTree *> combinations = gen_combinations(leafs);
-    for (auto item : combinations) {
-        uint32_t current = est->estimate(item).noPaths;
-        if (current < highest) {
-            newQuery = item;
-            highest = current;
+        auto res = evaluate_aux(cache[data]);
+        return SimpleEvaluator::computeStats(res);
+    } else {
+        RPQTree *newQuery;
+        std::vector<RPQTree *> combinations = gen_combinations(leafs);
+        for (auto item : combinations) {
+            uint32_t current = est->estimate(item).noPaths;
+            if (current < highest) {
+                newQuery = item;
+                highest = current;
+            }
         }
+        cache[data] = newQuery;
+        auto res = evaluate_aux(newQuery);
+        return SimpleEvaluator::computeStats(res);
     }
-    cache[data] = newQuery;
-    auto res = evaluate_aux(newQuery);
-    return SimpleEvaluator::computeStats(res);
 }
 
 // TODO: change to string for easier caching
