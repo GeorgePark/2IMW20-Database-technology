@@ -149,25 +149,27 @@ cardStat SimpleEvaluator::evaluate(RPQTree *query) {
     if (cache[data]) {
         //TODO: Get this working
     }
+    RPQTree *newQuery;
     std::vector<RPQTree *> combinations = gen_combinations(leafs);
     for (auto item : combinations) {
         uint32_t current = est->estimate(item).noPaths;
         if (current < highest) {
-            query = item;
+            newQuery = item;
             highest = current;
         }
     }
-    cache[data] = query;
-    auto res = evaluate_aux(query);
+    cache[data] = newQuery;
+    auto res = evaluate_aux(newQuery);
     return SimpleEvaluator::computeStats(res);
 }
 
+// TODO: change to string for easier caching
 // Function to get a list of all the leaves of a query
 std::vector<RPQTree *> SimpleEvaluator::leaves(RPQTree *query) {
     // Vector containing the leaves of a RPQTree
     std::vector<RPQTree *> leafs;
     if (query->isLeaf()) {
-        leafs.emplace_back(query);
+        leafs.push_back(new RPQTree (query->data, nullptr, nullptr));
         return leafs;
     }
     // Vector containing the return value of a previous call
