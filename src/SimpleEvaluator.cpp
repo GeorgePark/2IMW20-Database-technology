@@ -146,10 +146,9 @@ cardStat SimpleEvaluator::evaluate(RPQTree *query) {
     for (auto item : leafs) {
         data += item->data;
     }
-    if (cache[data]) {
+    if (cache.count(data)) {
         //TODO: Get this working
-        auto res = evaluate_aux(cache[data]);
-        return SimpleEvaluator::computeStats(res);
+        return cache[data];
     } else {
         RPQTree *newQuery;
         std::vector<RPQTree *> combinations = gen_combinations(leafs);
@@ -160,9 +159,9 @@ cardStat SimpleEvaluator::evaluate(RPQTree *query) {
                 highest = current;
             }
         }
-        cache[data] = newQuery;
         auto res = evaluate_aux(newQuery);
-        return SimpleEvaluator::computeStats(res);
+        cache[data] = SimpleEvaluator::computeStats(res);
+        return cache[data];
     }
 }
 

@@ -22,15 +22,11 @@ class SimpleEvaluator : public Evaluator {
 
 public:
 
-    std::map<std::string, RPQTree *> cache;
+    std::map<std::string, cardStat> cache;
 
     explicit SimpleEvaluator(std::shared_ptr<SimpleGraph> &g);
 
-    ~SimpleEvaluator() {
-        for (auto &it : cache) {
-            delete it.second;
-        }
-    }
+    ~SimpleEvaluator() = default;
 
     void prepare() override;
 
