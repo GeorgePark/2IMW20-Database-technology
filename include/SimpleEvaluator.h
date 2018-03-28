@@ -14,6 +14,7 @@
 #include "Graph.h"
 #include <list>
 #include <map>
+#include <set>
 
 class SimpleEvaluator : public Evaluator {
 
