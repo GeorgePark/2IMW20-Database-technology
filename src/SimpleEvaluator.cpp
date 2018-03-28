@@ -63,11 +63,11 @@ SimpleEvaluator::project(uint32_t projectLabel, bool inverse, std::shared_ptr<Si
         }
     } else {
         // going backward
-        for (uint32_t source = 0; source < in->getNoVertices(); source++) {
-            for (auto labelTarget : in->reverse_adj[source]) {
+        for (uint32_t target = 0; target < in->getNoVertices(); target++) {
+            for (auto labelTarget : in->adj[target]) {
 
                 auto label = labelTarget.first;
-                auto target = labelTarget.second;
+                auto source = labelTarget.second;
 
                 if (label == projectLabel)
                     out->addEdge(source, target, label);
@@ -163,7 +163,6 @@ cardStat SimpleEvaluator::evaluate(RPQTree *query) {
     }
 }
 
-// TODO: change to string for easier caching
 // Function to get a list of all the leaves of a query
 std::vector<RPQTree *> SimpleEvaluator::leaves(RPQTree *query) {
     // Vector containing the leaves of a RPQTree
