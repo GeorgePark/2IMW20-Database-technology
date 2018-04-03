@@ -88,13 +88,17 @@ SimpleEvaluator::join(std::shared_ptr<SimpleGraph> &left, std::shared_ptr<Simple
         for (auto labelTarget : left->adj[leftSource]) {
 
             int leftTarget = labelTarget.second;
+            std::set<uint32_t > test;
             // try to join the left target with right source
             for (auto rightLabelTarget : right->adj[leftTarget]) {
 
                 auto rightTarget = rightLabelTarget.second;
-                out->addEdge(leftSource, rightTarget, 0);
-
+                if (test.count(rightTarget) == 0) {
+                    out->addEdge(leftSource, rightTarget, 0);
+                    test.insert(rightTarget);
+                }
             }
+            test.clear();
         }
     }
     return out;
@@ -157,6 +161,8 @@ cardStat SimpleEvaluator::evaluate(RPQTree *query) {
                 highest = current;
             }
         }
+        std::cout<<"\nChosen query: ";
+        newQuery->print();
         auto res = evaluate_aux(newQuery);
         cache[data] = SimpleEvaluator::computeStats(res);
         return cache[data];
