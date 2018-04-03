@@ -95,7 +95,6 @@ void SimpleGraph::readFromContiguousFile(const std::string &fileName) {
         throw std::runtime_error(std::string("Invalid graph header!"));
     }
 
-    // parse edge data
     while (std::getline(graphFile, line)) {
 
         if (std::regex_search(line, matches, edgePat)) {
@@ -110,6 +109,23 @@ void SimpleGraph::readFromContiguousFile(const std::string &fileName) {
                 addEdge(subject, object, predicate);
             }
         }
+    }/*
+    std::ifstream inFile;
+    inFile.open(fileName);//open the input file
+
+    // parse edge data
+    std::stringstream strStream;
+    strStream << inFile.rdbuf();//read the file
+    std::string str;
+
+    std::getline(strStream, str);
+
+    while (std::getline(strStream, str))
+    {
+        std::cout<<str;
     }
+
+    inFile.close();*/
+
     graphFile.close();
 }
