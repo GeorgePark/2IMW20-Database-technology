@@ -65,16 +65,13 @@ void SimpleGraph::setNoLabels(uint32_t noLabels) {
     L = noLabels;
 }
 
-void SimpleGraph::addEdge(uint32_t from, uint32_t to, uint32_t edgeLabel){
-    auto item = std::make_pair(edgeLabel, to);
-    if (std::find(adj[from].begin(), adj[from].end(), item) == adj[from].end()) {
-        if (from >= V || to >= V || edgeLabel >= L)
-            throw std::runtime_error(std::string("Edge data out of bounds: ") +
-                                     "(" + std::to_string(from) + "," + std::to_string(to) + "," +
-                                     std::to_string(edgeLabel) + ")");
-        adj[from].emplace_back(std::make_pair(edgeLabel, to));
-        reverse_adj[to].emplace_back(std::make_pair(edgeLabel, from));
-    }
+void SimpleGraph::addEdge(uint32_t from, uint32_t to, uint32_t edgeLabel) {
+    if (from >= V || to >= V || edgeLabel >= L)
+        throw std::runtime_error(std::string("Edge data out of bounds: ") +
+                                 "(" + std::to_string(from) + "," + std::to_string(to) + "," +
+                                 std::to_string(edgeLabel) + ")");
+    adj[from].emplace_back(std::make_pair(edgeLabel, to));
+    reverse_adj[to].emplace_back(std::make_pair(edgeLabel, from));
 }
 
 void SimpleGraph::readFromContiguousFile(const std::string &fileName) {
@@ -106,8 +103,12 @@ void SimpleGraph::readFromContiguousFile(const std::string &fileName) {
             uint32_t predicate = (uint32_t) std::stoul(matches[2]);
             uint32_t object = (uint32_t) std::stoul(matches[3]);
 
-            addEdge(subject, object, predicate);
-
+            auto item = std::make_pair(predicate, object);
+            if (std::find(adj[subject].begin(), adj[subject].end(), item) != adj[subject].end()) {
+                // Do nothing as item is already present
+            } else {
+                addEdge(subject, object, predicate);
+            }
         }
     }
     graphFile.close();
