@@ -38,7 +38,7 @@ cardStat SimpleEvaluator::computeStats(std::shared_ptr<SimpleGraph> &g) {
         if (!g->reverse_adj[source].empty()) stats.noIn++;
     }
 
-    stats.noPaths = g->getNoEdges();
+    stats.noPaths = g->getNoDistinctEdges();
 
     return stats;
 }
@@ -92,11 +92,7 @@ SimpleEvaluator::join(std::shared_ptr<SimpleGraph> &left, std::shared_ptr<Simple
             for (auto rightLabelTarget : right->adj[leftTarget]) {
 
                 auto rightTarget = rightLabelTarget.second;
-                uint32_t zero = 0;
-                auto item = std::make_pair(zero, rightTarget);
-                if (std::find(out->adj[leftSource].begin(), out->adj[leftSource].end(), item) == out->adj[leftSource].end()) {
-                    out->addEdge(leftSource, rightTarget, 0);
-                }
+                out->addEdge(leftSource, rightTarget, 0);
 
             }
         }
