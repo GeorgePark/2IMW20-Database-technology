@@ -100,6 +100,20 @@ SimpleEvaluator::join(std::shared_ptr<SimpleGraph> &left, std::shared_ptr<Simple
     return out;
 }
 
+std::string print(RPQTree *q) {
+    std::string data;
+
+    data += '(' + q->data + ' ';
+    if(q->left != nullptr){
+        data += print(q->left);
+    }
+    if(q->right!= nullptr){
+        data +=print(q->right);
+    }
+    data += ')';
+    return data;
+}
+
 std::shared_ptr<SimpleGraph> SimpleEvaluator::evaluate_aux(RPQTree *q) {
 
     // evaluate according to the AST bottom-up
@@ -129,15 +143,18 @@ std::shared_ptr<SimpleGraph> SimpleEvaluator::evaluate_aux(RPQTree *q) {
         // evaluate the children
         auto leftGraph = SimpleEvaluator::evaluate_aux(q->left);
         auto rightGraph = SimpleEvaluator::evaluate_aux(q->right);
-        
-        if (intermediateCache.count(q) > 0) {
-            return intermediateCache[q];
+
+        std::string query = print(q);
+        std::cout<<query;
+
+        if (intermediateCache.count(query) > 0) {
+            return intermediateCache[query];
         }
-        intermediateCache[q];
+        intermediateCache[query];
 
         // join left with right
-        intermediateCache[q] = SimpleEvaluator::join(leftGraph, rightGraph);
-        return intermediateCache[q];
+        intermediateCache[query] = SimpleEvaluator::join(leftGraph, rightGraph);
+        return intermediateCache[query];
 
     }
 
