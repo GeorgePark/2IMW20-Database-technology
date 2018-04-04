@@ -78,8 +78,8 @@ void SimpleGraph::readFromContiguousFile(const std::string &fileName) {
 
     std::string line;
     std::ifstream graphFile{fileName};
-/*
-    std::regex edgePat(R"((\d+)\s(\d+)\s(\d+)\s\.)"); // subject predicate object .*/
+
+    std::regex edgePat(R"((\d+)\s(\d+)\s(\d+)\s\.)"); // subject predicate object .
     std::regex headerPat(R"((\d+),(\d+),(\d+))"); // noNodes,noEdges,noLabels
 
     // parse the header (1st line)
@@ -94,7 +94,7 @@ void SimpleGraph::readFromContiguousFile(const std::string &fileName) {
     } else {
         throw std::runtime_error(std::string("Invalid graph header!"));
     }
-    /*
+
     while (std::getline(graphFile, line)) {
 
         if (std::regex_search(line, matches, edgePat)) {
@@ -109,25 +109,23 @@ void SimpleGraph::readFromContiguousFile(const std::string &fileName) {
                 addEdge(subject, object, predicate);
             }
         }
-    }*/
-    std::string str;
-    while (std::getline(graphFile, str))
-    {
-        std::stringstream testStream(str);
-        std::string value;
-        std::getline(testStream, value, ' ');
-        uint32_t subject = (uint32_t)atoi(value.c_str());
-        std::getline(testStream, value, ' ');
-        uint32_t predicate = (uint32_t)atoi(value.c_str());
-        std::getline(testStream, value, ' ');
-        uint32_t object = (uint32_t)atoi(value.c_str());
+    }/*
+    std::ifstream inFile;
+    inFile.open(fileName);//open the input file
 
-        auto item = std::make_pair(predicate, object);
-        if (std::find(adj[subject].begin(), adj[subject].end(), item) != adj[subject].end()) {
-            // Do nothing as item is already present
-        } else {
-            addEdge(subject, object, predicate);
-        }
+    // parse edge data
+    std::stringstream strStream;
+    strStream << inFile.rdbuf();//read the file
+    std::string str;
+
+    std::getline(strStream, str);
+
+    while (std::getline(strStream, str))
+    {
+        std::cout<<str;
     }
+
+    inFile.close();*/
+
     graphFile.close();
 }
