@@ -81,6 +81,12 @@ SimpleEvaluator::project(uint32_t projectLabel, bool inverse, std::shared_ptr<Si
 std::shared_ptr<SimpleGraph>
 SimpleEvaluator::join(std::shared_ptr<SimpleGraph> &left, std::shared_ptr<SimpleGraph> &right) {
 
+    //sort stuff
+    std::sort(left->reverse_adj.begin(), left->reverse_adj.end());
+    std::sort(right->adj.begin(), right->adj.end());
+
+    //TODO: Merge join
+
     auto out = std::make_shared<SimpleGraph>(left->getNoVertices());
     out->setNoLabels(1);
 
