@@ -25,6 +25,8 @@ public:
 
     std::map<std::string, cardStat> cache;
 
+    std::map<std::pair<std::shared_ptr<SimpleGraph>, std::shared_ptr<SimpleGraph>>, std::shared_ptr<SimpleGraph>> seen_graphs;
+
     explicit SimpleEvaluator(std::shared_ptr<SimpleGraph> &g);
 
     ~SimpleEvaluator() = default;
@@ -39,7 +41,7 @@ public:
 
     static std::shared_ptr<SimpleGraph> project(uint32_t label, bool inverse, std::shared_ptr<SimpleGraph> &g);
 
-    static std::shared_ptr<SimpleGraph> join(std::shared_ptr<SimpleGraph> &left, std::shared_ptr<SimpleGraph> &right);
+    std::shared_ptr<SimpleGraph> join(std::shared_ptr<SimpleGraph> &left, std::shared_ptr<SimpleGraph> &right);
 
     static cardStat computeStats(std::shared_ptr<SimpleGraph> &g);
 
