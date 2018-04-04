@@ -24,6 +24,7 @@ class SimpleEvaluator : public Evaluator {
 public:
 
     std::map<std::string, cardStat> cache;
+    std::map<RPQTree *, std::shared_ptr<SimpleGraph>> intermediateCache;
 
     explicit SimpleEvaluator(std::shared_ptr<SimpleGraph> &g);
 
