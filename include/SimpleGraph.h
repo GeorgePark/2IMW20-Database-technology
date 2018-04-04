@@ -12,11 +12,13 @@
 #include <regex>
 #include <fstream>
 #include "Graph.h"
+#include "set"
 
 class SimpleGraph : public Graph {
 public:
     std::vector<std::vector<std::pair<uint32_t,uint32_t>>> adj;
-    std::vector<std::vector<std::pair<uint32_t,uint32_t>>> reverse_adj; // vertex adjacency list
+    //std::vector<std::vector<std::pair<uint32_t,uint32_t>>> reverse_adj; // vertex adjacency list
+    std::set<uint32_t> targets;
 protected:
     uint32_t V;
     uint32_t L;
