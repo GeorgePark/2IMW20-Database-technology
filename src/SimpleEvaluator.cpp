@@ -35,10 +35,9 @@ cardStat SimpleEvaluator::computeStats(std::shared_ptr<SimpleGraph> &g) {
 
     for (int source = 0; source < g->getNoVertices(); source++) {
         if (!g->adj[source].empty()) stats.noOut++;
-        //if (!g->reverse_adj[source].empty()) stats.noIn++;
+        if (!g->reverse_adj[source].empty()) stats.noIn++;
     }
 
-    stats.noIn = g->targets.size();
     stats.noPaths = g->getNoDistinctEdges();
 
     return stats;
