@@ -150,8 +150,6 @@ std::shared_ptr<SimpleGraph> SimpleEvaluator::evaluate_aux(RPQTree *q) {
         if (intermediateCache.count(query) > 0) {
             return intermediateCache[query];
         } else {
-            intermediateCache[query];
-
             // join left with right
             intermediateCache[query] = SimpleEvaluator::join(leftGraph, rightGraph);
             return intermediateCache[query];
