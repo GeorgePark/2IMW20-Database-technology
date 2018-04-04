@@ -81,28 +81,23 @@ SimpleEvaluator::project(uint32_t projectLabel, bool inverse, std::shared_ptr<Si
 std::shared_ptr<SimpleGraph>
 SimpleEvaluator::join(std::shared_ptr<SimpleGraph> &left, std::shared_ptr<SimpleGraph> &right) {
 
-    if (seen_graphs.count(std::make_pair(left, right))) {
-        return seen_graphs[std::make_pair(left, right)];
-    } else {
-        auto out = std::make_shared<SimpleGraph>(left->getNoVertices());
-        out->setNoLabels(1);
+    auto out = std::make_shared<SimpleGraph>(left->getNoVertices());
+    out->setNoLabels(1);
 
-        for (uint32_t leftSource = 0; leftSource < left->getNoVertices(); leftSource++) {
-            for (auto labelTarget : left->adj[leftSource]) {
+    for (uint32_t leftSource = 0; leftSource < left->getNoVertices(); leftSource++) {
+        for (auto labelTarget : left->adj[leftSource]) {
 
-                int leftTarget = labelTarget.second;
-                // try to join the left target with right source
-                for (auto rightLabelTarget : right->adj[leftTarget]) {
+            int leftTarget = labelTarget.second;
+            // try to join the left target with right source
+            for (auto rightLabelTarget : right->adj[leftTarget]) {
 
-                    auto rightTarget = rightLabelTarget.second;
-                    out->addEdge(leftSource, rightTarget, 0);
+                auto rightTarget = rightLabelTarget.second;
+                out->addEdge(leftSource, rightTarget, 0);
 
-                }
             }
         }
-        seen_graphs[std::make_pair(left, right)] = out;
-        return out;
     }
+    return out;
 }
 
 std::shared_ptr<SimpleGraph> SimpleEvaluator::evaluate_aux(RPQTree *q) {
@@ -173,7 +168,7 @@ std::vector<RPQTree *> SimpleEvaluator::leaves(RPQTree *query) {
     // Vector containing the leaves of a RPQTree
     std::vector<RPQTree *> leafs;
     if (query->isLeaf()) {
-        leafs.push_back(new RPQTree(query->data, nullptr, nullptr));
+        leafs.push_back(new RPQTree (query->data, nullptr, nullptr));
         return leafs;
     }
     // Vector containing the return value of a previous call
