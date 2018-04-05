@@ -144,6 +144,7 @@ std::shared_ptr<SimpleGraph> SimpleEvaluator::evaluate_aux(RPQTree *q) {
         auto leftGraph = SimpleEvaluator::evaluate_aux(q->left);
         auto rightGraph = SimpleEvaluator::evaluate_aux(q->right);
 
+        /*
         std::string query = print(q);
         std::cout<<query;
 
@@ -153,7 +154,8 @@ std::shared_ptr<SimpleGraph> SimpleEvaluator::evaluate_aux(RPQTree *q) {
             // join left with right
             intermediateCache[query] = SimpleEvaluator::join(leftGraph, rightGraph);
             return intermediateCache[query];
-        }
+        }*/
+        return SimpleEvaluator::join(leftGraph, rightGraph);
     }
 
     return nullptr;
