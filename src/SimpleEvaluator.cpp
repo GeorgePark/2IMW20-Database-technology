@@ -51,27 +51,22 @@ SimpleEvaluator::project(uint32_t projectLabel, bool inverse, std::shared_ptr<Si
 
     if (!inverse) {
         // going forward
-        for (uint32_t source = 0; source < in->getNoVertices(); source++) {
-            for (auto labelTarget : in->adj[source]) {
+        for (auto labelTarget : in->edgeadj[projectLabel]) {
 
-                auto label = labelTarget.first;
-                auto target = labelTarget.second;
+            auto source = labelTarget.first;
+            auto target = labelTarget.second;
 
-                if (label == projectLabel)
-                    out->addEdge(source, target, 0);
-            }
+            out->addEdge(source, target, 0);
         }
+
     } else {
         // going backward
-        for (uint32_t target = 0; target < in->getNoVertices(); target++) {
-            for (auto labelTarget : in->adj[target]) {
+        for (auto labelTarget : in->edgeadj[projectLabel]) {
 
-                auto label = labelTarget.first;
-                auto source = labelTarget.second;
+            auto source = labelTarget.first;
+            auto target = labelTarget.second;
 
-                if (label == projectLabel)
-                    out->addEdge(source, target, 0);
-            }
+            out->addEdge(target, source, 0);
         }
     }
 
@@ -150,7 +145,6 @@ std::shared_ptr<SimpleGraph> SimpleEvaluator::evaluate_aux(RPQTree *q) {
         }
 
         if (intermediateCache.count(query) > 0) {
-            std::cout<<"Hello" << std::endl;
             return intermediateCache[query];
         } else {
             // join left with right
