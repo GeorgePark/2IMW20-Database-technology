@@ -31,16 +31,23 @@ std::regex inverseLabelEval(R"((\d+)\-)");
 
 cardStat SimpleEvaluator::computeStats(std::shared_ptr<Results> &g) {
 
+    g->removeDuplicates();
+
     cardStat stats{};
 
-    //TODO: Fill in stats
-    //int count = 0;
+    std::vector<uint8_t> noIn(graph->getNoVertices());
+
     for (auto item : g->result) {
         if (!item.second.empty()) {
             stats.noOut++;
             stats.noPaths += item.second.size();
+            for (auto target : item.second) {
+                noIn[target] = 1;
+            }
         }
     }
+
+    stats.noIn = std::count(noIn.begin(), noIn.end(), 1);
 
     return stats;
 }
@@ -86,24 +93,6 @@ SimpleEvaluator::join(std::shared_ptr<Results> &left, std::shared_ptr<Results> &
                                                  right->result[rightSources].end());
         }
     }
-
-    int count = 0;
-    for (auto item : out->result) {
-        if (!item.second.empty()) {
-            std::set<uint32_t> dup;
-            for (auto test : item.second) {
-                if (dup.count(test) == 0) {
-                    dup.insert(test);
-                } else {
-                    count++;
-                }
-            }
-        }
-    }
-
-    // Sort and unique on all out
-    out->removeDuplicates();
-
     return out;
 }
 

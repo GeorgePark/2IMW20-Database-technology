@@ -20,6 +20,7 @@ struct Results {
     std::map<uint32_t, std::vector<uint32_t>> result;
 
     void removeDuplicates () {
+        // Dont forget the &
         for (auto &item : result) {
             std::sort(item.second.begin(), item.second.end());
             // item.second now holds {1 2 3 4 5 6 7 x x x x x x}, where 'x' is indeterminate
