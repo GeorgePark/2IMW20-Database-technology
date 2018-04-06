@@ -23,17 +23,18 @@ void SimpleEstimator::prepare() {
 
     for(int noLabels = 0; noLabels < graph->getNoLabels(); noLabels++) {
         est_result[noLabels] = cardStat {0, 0, 0};
-        est_result[noLabels].noPaths = graph->edgeadj[noLabels].size();
-        if (est_result[noLabels].noPaths != 0) {
-            uint32_t helper = (uint32_t) (((float) (est_result[noLabels].noPaths) / (float) (graph->getNoEdges())) *
-                                          graph->getNoVertices());
-            est_result[noLabels].noOut = helper;
-            est_result[noLabels].noIn = helper;
+    }
+
+    for (int source = 0; source < graph->getNoVertices(); source++) {
+        for (auto labelSource : graph->adj[source]) {
+            est_result[labelSource.first].noPaths++;
         }
     }
 
     for (int noLabels = 0; noLabels < graph->getNoLabels(); noLabels++) {
-
+        uint32_t helper = (uint32_t)(((float)(est_result[noLabels].noPaths) / (float)(graph->getNoEdges())) * graph->getNoVertices());
+        est_result[noLabels].noOut = helper;
+        est_result[noLabels].noIn = helper;
     }
 
 }
