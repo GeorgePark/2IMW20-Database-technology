@@ -69,9 +69,8 @@ SimpleEvaluator::project(uint32_t projectLabel, bool inverse, std::shared_ptr<Si
     // Sort and unique on all out
     for (auto item : out->result) {
         std::sort(item.second.begin(), item.second.end());
-        auto last = std::unique(item.second.begin(), item.second.end());
         // v now holds {1 2 3 4 5 6 7 x x x x x x}, where 'x' is indeterminate
-        item.second.erase(last, item.second.end());
+        item.second.erase(std::unique(item.second.begin(), item.second.end()), item.second.end());
         item.second.shrink_to_fit();
     }
 
@@ -97,9 +96,8 @@ SimpleEvaluator::join(std::shared_ptr<Results> &left, std::shared_ptr<Results> &
     // Sort and unique on all out
     for (auto item : out->result) {
         std::sort(item.second.begin(), item.second.end());
-        auto last = std::unique(item.second.begin(), item.second.end());
         // Remove the now empty places
-        item.second.erase(last, item.second.end());
+        item.second.erase(std::unique(item.second.begin(), item.second.end()), item.second.end());
         item.second.shrink_to_fit();
     }
 
@@ -127,7 +125,7 @@ std::shared_ptr<Results> SimpleEvaluator::evaluate_aux(RPQTree *q) {
             std::cerr << "Label parsing failed!" << std::endl;
             return nullptr;
         }
-
+/*
         for (auto item : leaves(q)) {
             query += item->data;
         }
@@ -138,7 +136,7 @@ std::shared_ptr<Results> SimpleEvaluator::evaluate_aux(RPQTree *q) {
             // join left with right
             intermediateCache[query] = SimpleEvaluator::project(label, inverse, graph);
             return intermediateCache[query];
-        }
+        }*/
 
         return SimpleEvaluator::project(label, inverse, graph);
     }
@@ -148,7 +146,7 @@ std::shared_ptr<Results> SimpleEvaluator::evaluate_aux(RPQTree *q) {
         // evaluate the children
         auto leftGraph = SimpleEvaluator::evaluate_aux(q->left);
         auto rightGraph = SimpleEvaluator::evaluate_aux(q->right);
-
+/*
         for (auto item : leaves(q)) {
             query += item->data;
         }
@@ -159,7 +157,7 @@ std::shared_ptr<Results> SimpleEvaluator::evaluate_aux(RPQTree *q) {
             // join left with right
             intermediateCache[query] = SimpleEvaluator::join(leftGraph, rightGraph);
             return intermediateCache[query];
-        }
+        }*/
         return SimpleEvaluator::join(leftGraph, rightGraph);
     }
 
