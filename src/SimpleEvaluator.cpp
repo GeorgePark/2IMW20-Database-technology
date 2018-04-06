@@ -87,15 +87,7 @@ bool sortPairsEvaluate(const std::pair<uint32_t, uint32_t> &a, const std::pair<u
 
 std::shared_ptr<SimpleGraph>
 SimpleEvaluator::join(std::shared_ptr<SimpleGraph> &left, std::shared_ptr<SimpleGraph> &right) {
-
-    for (auto sourceVec : right->adj) {
-        std::sort(sourceVec.begin(), sourceVec.end(), sortPairsEvaluate);
-    }
-
-    for (auto sourceVec : left->adj) {
-        std::sort(sourceVec.begin(), sourceVec.end(), sortPairsEvaluate);
-    }
-
+    
     auto out = std::make_shared<SimpleGraph>(left->getNoVertices());
     out->setNoLabels(1);
 
