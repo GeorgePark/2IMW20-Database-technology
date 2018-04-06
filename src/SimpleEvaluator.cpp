@@ -87,7 +87,7 @@ bool sortPairsEvaluate(const std::pair<uint32_t, uint32_t> &a, const std::pair<u
 
 std::shared_ptr<SimpleGraph>
 SimpleEvaluator::join(std::shared_ptr<SimpleGraph> &left, std::shared_ptr<SimpleGraph> &right) {
-    
+
     auto out = std::make_shared<SimpleGraph>(left->getNoVertices());
     out->setNoLabels(1);
 
@@ -136,14 +136,14 @@ std::shared_ptr<SimpleGraph> SimpleEvaluator::evaluate_aux(RPQTree *q) {
         for (auto item : leaves(q)) {
             query += item->data;
         }
-
+/*
         if (intermediateCache.count(query) > 0) {
             return intermediateCache[query];
         } else {
             // join left with right
             intermediateCache[query] = SimpleEvaluator::project(label, inverse, graph);
             return intermediateCache[query];
-        }
+        }*/
 
         return SimpleEvaluator::project(label, inverse, graph);
     }
@@ -157,14 +157,14 @@ std::shared_ptr<SimpleGraph> SimpleEvaluator::evaluate_aux(RPQTree *q) {
         for (auto item : leaves(q)) {
             query += item->data;
         }
-
+    /*
         if (intermediateCache.count(query) > 0) {
             return intermediateCache[query];
         } else {
             // join left with right
             intermediateCache[query] = SimpleEvaluator::join(leftGraph, rightGraph);
             return intermediateCache[query];
-        }
+        }*/
         return SimpleEvaluator::join(leftGraph, rightGraph);
     }
 
