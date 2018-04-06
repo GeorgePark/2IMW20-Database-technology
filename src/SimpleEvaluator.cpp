@@ -129,14 +129,14 @@ std::shared_ptr<SimpleGraph> SimpleEvaluator::evaluate_aux(RPQTree *q) {
         for (auto item : leaves(q)) {
             query += item->data;
         }
-/*
+
         if (intermediateCache.count(query) > 0) {
             return intermediateCache[query];
         } else {
             // join left with right
             intermediateCache[query] = SimpleEvaluator::project(label, inverse, graph);
             return intermediateCache[query];
-        }*/
+        }
 
         return SimpleEvaluator::project(label, inverse, graph);
     }
