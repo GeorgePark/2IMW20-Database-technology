@@ -38,18 +38,9 @@ cardStat SimpleEvaluator::computeStats(std::shared_ptr<Results> &g) {
     for (auto item : g->result) {
         if (!item.second.empty()) {
             stats.noOut++;
-            std::set<uint32_t> dup;
-            for (auto test : item.second) {
-                if (dup.count(test) == 0) {
-                    dup.insert(test);
-                } else {
-                    //count++;
-                }
-            }
             stats.noPaths += item.second.size();
         }
     }
-    //std::cout << count <<std::endl;
 
     return stats;
 }
@@ -109,25 +100,9 @@ SimpleEvaluator::join(std::shared_ptr<Results> &left, std::shared_ptr<Results> &
             }
         }
     }
-    std::cout << "Duplicates before:" <<count <<std::endl;
 
     // Sort and unique on all out
     out->removeDuplicates();
-
-    count = 0;
-    for (auto item : out->result) {
-        if (!item.second.empty()) {
-            std::set<uint32_t> dup;
-            for (auto test : item.second) {
-                if (dup.count(test) == 0) {
-                    dup.insert(test);
-                } else {
-                    count++;
-                }
-            }
-        }
-    }
-    std::cout << "Duplicates after:" <<count <<std::endl;
 
     return out;
 }
