@@ -29,78 +29,84 @@ void SimpleEvaluator::prepare() {
 std::regex directLabelEval(R"((\d+)\+)");
 std::regex inverseLabelEval(R"((\d+)\-)");
 
-cardStat SimpleEvaluator::computeStats(std::shared_ptr<SimpleGraph> &g) {
+cardStat SimpleEvaluator::computeStats(std::shared_ptr<Results> &g) {
 
     cardStat stats{};
 
-    for (int source = 0; source < g->getNoVertices(); source++) {
-        if (!g->adj[source].empty()) stats.noOut++;
-        if (!g->reverse_adj[source].empty()) stats.noIn++;
+    //TODO: Fill in stats
+    for (auto item : g->result) {
+        if (!item.second.empty()) {
+            stats.noOut ++;
+        }
+        stats.noPaths += item.second.size();
     }
-
-    stats.noPaths = g->getNoEdges();
 
     return stats;
 }
 
-std::shared_ptr<SimpleGraph>
+std::shared_ptr<Results>
 SimpleEvaluator::project(uint32_t projectLabel, bool inverse, std::shared_ptr<SimpleGraph> &in) {
 
-    auto out = std::make_shared<SimpleGraph>(in->getNoVertices());
-    out->setNoLabels(1);
-
+    auto out = std::make_shared<Results>(Results());
     if (!inverse) {
-        // going forward
         for (auto labelTarget : in->edgeadj[projectLabel]) {
 
             auto source = labelTarget.first;
             auto target = labelTarget.second;
 
-            out->addEdge(source, target, 0);
+            out->result[source].push_back(target);
         }
-
     } else {
-        // going backward
         for (auto labelTarget : in->edgeadj[projectLabel]) {
 
             auto source = labelTarget.first;
             auto target = labelTarget.second;
 
-            out->addEdge(target, source, 0);
+            out->result[target].push_back(source);
         }
+    }
+
+    // Sort and unique on all out
+    for (auto item : out->result) {
+        std::sort(item.second.begin(), item.second.end());
+        auto last = std::unique(item.second.begin(), item.second.end());
+        // v now holds {1 2 3 4 5 6 7 x x x x x x}, where 'x' is indeterminate
+        item.second.erase(last, item.second.end());
+        item.second.shrink_to_fit();
     }
 
     return out;
 }
 
-std::shared_ptr<SimpleGraph>
-SimpleEvaluator::join(std::shared_ptr<SimpleGraph> &left, std::shared_ptr<SimpleGraph> &right) {
+std::shared_ptr<Results>
+SimpleEvaluator::join(std::shared_ptr<Results> &left, std::shared_ptr<Results> &right) {
 
-    auto out = std::make_shared<SimpleGraph>(left->getNoVertices());
-    out->setNoLabels(1);
+    auto out = std::make_shared<Results>(Results());
 
-    for (uint32_t leftSource = 0; leftSource < left->getNoVertices(); leftSource++) {
-        std::vector<bool> previousRTarget(right->getNoVertices());
-        for (auto labelTarget : left->adj[leftSource]) {
-
-            uint32_t leftTarget = labelTarget.second;
-            // try to join the left target with right source
-            for (auto rightLabelTarget : right->adj[leftTarget]) {
-
-                auto rightTarget = rightLabelTarget.second;
-                if (!previousRTarget[rightTarget]) {
-                    out->addEdge(leftSource, rightTarget, 0);
-                    previousRTarget[rightTarget] = true;
-                }
-            }
+    // For all left results
+    for (const auto &leftResult : left->result){
+        // Get the vector of targets
+        for (auto rightSources : leftResult.second) {
+            // Append the vector of rightTargets with source leftTarget (leftResult.second) to the new results
+            // with key leftSource (leftResult.first)
+            out->result[leftResult.first].insert(out->result[leftResult.first].end(),
+                                                 right->result[rightSources].begin(), right->result[rightSources].end());
         }
-        previousRTarget.clear();
+    }
+
+    // Sort and unique on all out
+    for (auto item : out->result) {
+        std::sort(item.second.begin(), item.second.end());
+        auto last = std::unique(item.second.begin(), item.second.end());
+        // Remove the now empty places
+        item.second.erase(last, item.second.end());
+        item.second.shrink_to_fit();
     }
 
     return out;
 }
 
-std::shared_ptr<SimpleGraph> SimpleEvaluator::evaluate_aux(RPQTree *q) {
+std::shared_ptr<Results> SimpleEvaluator::evaluate_aux(RPQTree *q) {
 
     std::string query;
     // evaluate according to the AST bottom-up
