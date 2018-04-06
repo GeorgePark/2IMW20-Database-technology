@@ -124,12 +124,7 @@ void SimpleGraph::readFromContiguousFile(const std::string &fileName) {
         std::getline(testStream, value, ' ');
         uint32_t object = (uint32_t)atoi(value.c_str());
 
-        auto item = std::make_pair(subject, object);
-        if (std::find(edgeadj[predicate].begin(), edgeadj[predicate].end(), item) != edgeadj[predicate].end()) {
-            // Do nothing as item is already present
-        } else {
-            addEdge(subject, object, predicate);
-        }
+        addEdge(subject, object, predicate);
     }
     graphFile.close();
 }
