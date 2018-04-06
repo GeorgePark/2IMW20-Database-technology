@@ -78,13 +78,6 @@ SimpleEvaluator::project(uint32_t projectLabel, bool inverse, std::shared_ptr<Si
     return out;
 }
 
-// sort on the second item in the pair, then on the cardStats (ascending order)
-bool sortPairsEvaluate(const std::pair<uint32_t, uint32_t> &a, const std::pair<uint32_t, uint32_t> &b) {
-    if (a.second < b.second) return true;
-    if (a.second == b.second) return a.first < b.first;
-    return false;
-}
-
 std::shared_ptr<SimpleGraph>
 SimpleEvaluator::join(std::shared_ptr<SimpleGraph> &left, std::shared_ptr<SimpleGraph> &right) {
 
