@@ -38,7 +38,7 @@ cardStat SimpleEvaluator::computeStats(std::shared_ptr<SimpleGraph> &g) {
         if (!g->reverse_adj[source].empty()) stats.noIn++;
     }
 
-    stats.noPaths = g->getNoDistinctEdges();
+    stats.noPaths = g->getNoEdges();
 
     return stats;
 }
@@ -79,40 +79,22 @@ SimpleEvaluator::join(std::shared_ptr<SimpleGraph> &left, std::shared_ptr<Simple
     auto out = std::make_shared<SimpleGraph>(left->getNoVertices());
     out->setNoLabels(1);
 
-//    for (uint32_t leftSource = 0; leftSource < left->getNoVertices(); leftSource++) {
-//        std::vector<uint16_t > previousRTarget(right->getNoVertices());
-//        for (auto labelTarget : left->adj[leftSource]) {
-//
-//            uint32_t leftTarget = labelTarget.second;
-//            // try to join the left target with right source
-//            for (auto rightLabelTarget : right->adj[leftTarget]) {
-//
-//                auto rightTarget = rightLabelTarget.second;
-//                if (previousRTarget[rightTarget] == 0) {
-//                    out->addEdge(leftSource, rightTarget, 0);
-//                    previousRTarget[rightTarget] = 1;
-//                }
-//            }
-//        }
-//        //previousRTarget.clear();
-//    }
-
     for (uint32_t leftSource = 0; leftSource < left->getNoVertices(); leftSource++) {
-        //std::vector<bool> previousRTarget(right->getNoVertices());
+        std::vector<bool> previousRTarget(right->getNoVertices());
         for (auto labelTarget : left->adj[leftSource]) {
 
             uint32_t leftTarget = labelTarget.second;
             // try to join the left target with right source
             for (auto rightLabelTarget : right->adj[leftTarget]) {
+
                 auto rightTarget = rightLabelTarget.second;
-                //if (!previousRTarget[rightTarget]) {
+                if (!previousRTarget[rightTarget]) {
                     out->addEdge(leftSource, rightTarget, 0);
-                    //previousRTarget[rightTarget] = true;
-                //}
+                    previousRTarget[rightTarget] = true;
+                }
             }
         }
-
-        //std::fill(previousRTarget.begin(), previousRTarget.end(), 0);
+        previousRTarget.clear();
     }
 
     return out;

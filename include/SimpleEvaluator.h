@@ -17,7 +17,7 @@
 #include <set>
 
 struct Results {
-    std::vector<std::vector<uint32_t>> result;
+    std::unordered_map<uint32_t, std::vector<uint32_t>> result;
 };
 
 class SimpleEvaluator : public Evaluator {
