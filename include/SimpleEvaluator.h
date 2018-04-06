@@ -16,6 +16,10 @@
 #include <map>
 #include <set>
 
+struct Results {
+    std::vector<std::vector<uint32_t>> result;
+};
+
 class SimpleEvaluator : public Evaluator {
 
     std::shared_ptr<SimpleGraph> graph;
@@ -42,7 +46,7 @@ public:
 
     static std::shared_ptr<SimpleGraph> join(std::shared_ptr<SimpleGraph> &left, std::shared_ptr<SimpleGraph> &right);
 
-    static cardStat computeStats(std::shared_ptr<SimpleGraph> &g);
+    cardStat computeStats(std::shared_ptr<SimpleGraph> &g);
 
     std::vector<RPQTree *> leaves(RPQTree *query);
 
