@@ -85,7 +85,7 @@ SimpleEvaluator::join(std::shared_ptr<SimpleGraph> &left, std::shared_ptr<Simple
     out->setNoLabels(1);
 
     for (uint32_t leftSource = 0; leftSource < left->getNoVertices(); leftSource++) {
-        std::set<int> previousRTarget;
+        std::vector<uint8_t > previousRTarget(right->getNoVertices());
         for (auto labelTarget : left->adj[leftSource]) {
 
             uint32_t leftTarget = labelTarget.second;
@@ -93,13 +93,13 @@ SimpleEvaluator::join(std::shared_ptr<SimpleGraph> &left, std::shared_ptr<Simple
             for (auto rightLabelTarget : right->adj[leftTarget]) {
 
                 auto rightTarget = rightLabelTarget.second;
-                if (previousRTarget.count(rightTarget) == 0) {
+                if (!previousRTarget[rightTarget]) {
                     out->addEdge(leftSource, rightTarget, 0);
-                    previousRTarget.insert(rightTarget);
+                    previousRTarget[rightTarget] = 1;
                 }
             }
         }
-        previousRTarget.clear();
+        //previousRTarget.clear();
     }
     return out;
 }
