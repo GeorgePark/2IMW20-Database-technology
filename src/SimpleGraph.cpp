@@ -128,7 +128,7 @@ void SimpleGraph::readFromContiguousFile(const std::string &fileName) {
     }
     graphFile.close();
 
-    for (auto edgeLabel : edgeadj) {
+    for (auto &edgeLabel : edgeadj) {
         std::sort(edgeLabel.begin(), edgeLabel.end(), sortPairs);
         // edgeLabel now holds {1 2 3 4 5 6 7 x x x x x x}, where 'x' is indeterminate
         edgeLabel.erase(std::unique(edgeLabel.begin(), edgeLabel.end()), edgeLabel.end());
