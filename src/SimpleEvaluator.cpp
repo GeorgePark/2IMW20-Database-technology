@@ -34,12 +34,22 @@ cardStat SimpleEvaluator::computeStats(std::shared_ptr<Results> &g) {
     cardStat stats{};
 
     //TODO: Fill in stats
+    //int count = 0;
     for (auto item : g->result) {
         if (!item.second.empty()) {
-            stats.noOut ++;
+            stats.noOut++;
+            std::set<uint32_t> dup;
+            for (auto test : item.second) {
+                if (dup.count(test) == 0) {
+                    dup.insert(test);
+                } else {
+                    //count++;
+                }
+            }
+            stats.noPaths += item.second.size();
         }
-        stats.noPaths += item.second.size();
     }
+    //std::cout << count <<std::endl;
 
     return stats;
 }
@@ -66,14 +76,6 @@ SimpleEvaluator::project(uint32_t projectLabel, bool inverse, std::shared_ptr<Si
         }
     }
 
-    // Sort and unique on all out
-    for (auto item : out->result) {
-        std::sort(item.second.begin(), item.second.end());
-        // v now holds {1 2 3 4 5 6 7 x x x x x x}, where 'x' is indeterminate
-        item.second.erase(std::unique(item.second.begin(), item.second.end()), item.second.end());
-        item.second.shrink_to_fit();
-    }
-
     return out;
 }
 
@@ -83,23 +85,49 @@ SimpleEvaluator::join(std::shared_ptr<Results> &left, std::shared_ptr<Results> &
     auto out = std::make_shared<Results>(Results());
 
     // For all left results
-    for (const auto &leftResult : left->result){
+    for (const auto &leftResult : left->result) {
         // Get the vector of targets
         for (auto rightSources : leftResult.second) {
             // Append the vector of rightTargets with source leftTarget (leftResult.second) to the new results
             // with key leftSource (leftResult.first)
             out->result[leftResult.first].insert(out->result[leftResult.first].end(),
-                                                 right->result[rightSources].begin(), right->result[rightSources].end());
+                                                 right->result[rightSources].begin(),
+                                                 right->result[rightSources].end());
         }
     }
 
-    // Sort and unique on all out
+    int count = 0;
     for (auto item : out->result) {
-        std::sort(item.second.begin(), item.second.end());
-        // Remove the now empty places
-        item.second.erase(std::unique(item.second.begin(), item.second.end()), item.second.end());
-        item.second.shrink_to_fit();
+        if (!item.second.empty()) {
+            std::set<uint32_t> dup;
+            for (auto test : item.second) {
+                if (dup.count(test) == 0) {
+                    dup.insert(test);
+                } else {
+                    count++;
+                }
+            }
+        }
     }
+    std::cout << "Duplicates before:" <<count <<std::endl;
+
+    // Sort and unique on all out
+    out->removeDuplicates();
+
+    count = 0;
+    for (auto item : out->result) {
+        if (!item.second.empty()) {
+            std::set<uint32_t> dup;
+            for (auto test : item.second) {
+                if (dup.count(test) == 0) {
+                    dup.insert(test);
+                } else {
+                    count++;
+                }
+            }
+        }
+    }
+    std::cout << "Duplicates after:" <<count <<std::endl;
 
     return out;
 }
@@ -125,7 +153,7 @@ std::shared_ptr<Results> SimpleEvaluator::evaluate_aux(RPQTree *q) {
             std::cerr << "Label parsing failed!" << std::endl;
             return nullptr;
         }
-/*
+
         for (auto item : leaves(q)) {
             query += item->data;
         }
@@ -136,7 +164,7 @@ std::shared_ptr<Results> SimpleEvaluator::evaluate_aux(RPQTree *q) {
             // join left with right
             intermediateCache[query] = SimpleEvaluator::project(label, inverse, graph);
             return intermediateCache[query];
-        }*/
+        }
 
         return SimpleEvaluator::project(label, inverse, graph);
     }
@@ -146,7 +174,7 @@ std::shared_ptr<Results> SimpleEvaluator::evaluate_aux(RPQTree *q) {
         // evaluate the children
         auto leftGraph = SimpleEvaluator::evaluate_aux(q->left);
         auto rightGraph = SimpleEvaluator::evaluate_aux(q->right);
-/*
+
         for (auto item : leaves(q)) {
             query += item->data;
         }
@@ -157,7 +185,7 @@ std::shared_ptr<Results> SimpleEvaluator::evaluate_aux(RPQTree *q) {
             // join left with right
             intermediateCache[query] = SimpleEvaluator::join(leftGraph, rightGraph);
             return intermediateCache[query];
-        }*/
+        }
         return SimpleEvaluator::join(leftGraph, rightGraph);
     }
 
@@ -194,7 +222,7 @@ std::vector<RPQTree *> SimpleEvaluator::leaves(RPQTree *query) {
     // Vector containing the leaves of a RPQTree
     std::vector<RPQTree *> leafs;
     if (query->isLeaf()) {
-        leafs.push_back(new RPQTree (query->data, nullptr, nullptr));
+        leafs.push_back(new RPQTree(query->data, nullptr, nullptr));
         return leafs;
     }
     // Vector containing the return value of a previous call

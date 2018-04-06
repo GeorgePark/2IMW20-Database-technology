@@ -17,7 +17,15 @@
 #include <set>
 
 struct Results {
-    std::unordered_map<uint32_t, std::vector<uint32_t>> result;
+    std::map<uint32_t, std::vector<uint32_t>> result;
+
+    void removeDuplicates () {
+        for (auto &item : result) {
+            std::sort(item.second.begin(), item.second.end());
+            // item.second now holds {1 2 3 4 5 6 7 x x x x x x}, where 'x' is indeterminate
+            item.second.erase(std::unique(item.second.begin(), item.second.end()), item.second.end());
+        }
+    }
 };
 
 class SimpleEvaluator : public Evaluator {
