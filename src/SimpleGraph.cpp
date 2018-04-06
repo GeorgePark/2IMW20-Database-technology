@@ -63,6 +63,7 @@ uint32_t SimpleGraph::getNoLabels() const {
 
 void SimpleGraph::setNoLabels(uint32_t noLabels) {
     L = noLabels;
+    edgeadj.resize(L);
 }
 
 void SimpleGraph::addEdge(uint32_t from, uint32_t to, uint32_t edgeLabel) {
@@ -72,6 +73,7 @@ void SimpleGraph::addEdge(uint32_t from, uint32_t to, uint32_t edgeLabel) {
                                  std::to_string(edgeLabel) + ")");
     adj[from].emplace_back(std::make_pair(edgeLabel, to));
     reverse_adj[to].emplace_back(std::make_pair(edgeLabel, from));
+    edgeadj[edgeLabel].emplace_back(from, to);
 }
 
 void SimpleGraph::readFromContiguousFile(const std::string &fileName) {
