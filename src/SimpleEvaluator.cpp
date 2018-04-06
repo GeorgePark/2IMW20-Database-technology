@@ -84,23 +84,51 @@ SimpleEvaluator::join(std::shared_ptr<SimpleGraph> &left, std::shared_ptr<Simple
     auto out = std::make_shared<SimpleGraph>(left->getNoVertices());
     out->setNoLabels(1);
 
+//    for (uint32_t leftSource = 0; leftSource < left->getNoVertices(); leftSource++) {
+//        std::vector<uint16_t > previousRTarget(right->getNoVertices());
+//        for (auto labelTarget : left->adj[leftSource]) {
+//
+//            uint32_t leftTarget = labelTarget.second;
+//            // try to join the left target with right source
+//            for (auto rightLabelTarget : right->adj[leftTarget]) {
+//
+//                auto rightTarget = rightLabelTarget.second;
+//                if (previousRTarget[rightTarget] == 0) {
+//                    out->addEdge(leftSource, rightTarget, 0);
+//                    previousRTarget[rightTarget] = 1;
+//                }
+//            }
+//        }
+//        //previousRTarget.clear();
+//    }
+
+    std::vector<uint16_t > previousRTarget(right->getNoVertices());
+
+    uint32_t poep = 0;
+    uint32_t poep2 = 0;
+
     for (uint32_t leftSource = 0; leftSource < left->getNoVertices(); leftSource++) {
-        std::vector<uint8_t > previousRTarget(right->getNoVertices());
         for (auto labelTarget : left->adj[leftSource]) {
 
             uint32_t leftTarget = labelTarget.second;
             // try to join the left target with right source
             for (auto rightLabelTarget : right->adj[leftTarget]) {
 
+                poep2++;
                 auto rightTarget = rightLabelTarget.second;
-                if (!previousRTarget[rightTarget]) {
+                if (previousRTarget[rightTarget] == 0) {
+                    poep++;
                     out->addEdge(leftSource, rightTarget, 0);
                     previousRTarget[rightTarget] = 1;
                 }
             }
         }
-        //previousRTarget.clear();
+
+        std::fill(previousRTarget.begin(), previousRTarget.end(), 0);
     }
+
+    std::cout << poep2 << ", " << poep << std::endl;
+
     return out;
 }
 
@@ -183,6 +211,7 @@ cardStat SimpleEvaluator::evaluate(RPQTree *query) {
                 highest = current;
             }
         }
+        newQuery->print();
         auto res = evaluate_aux(newQuery);
         cache[data] = SimpleEvaluator::computeStats(res);
         return cache[data];
