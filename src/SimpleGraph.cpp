@@ -26,11 +26,11 @@ uint32_t SimpleGraph::getNoEdges() const {
 }
 
 // sort on the second item in the pair, then on the cardStats (ascending order)
-//bool sortPairs(const std::pair<uint32_t, uint32_t> &a, const std::pair<uint32_t, uint32_t> &b) {
-//    if (a.second < b.second) return true;
-//    if (a.second == b.second) return a.first < b.first;
-//    return false;
-//}
+bool sortPairs(const std::pair<uint32_t, uint32_t> &a, const std::pair<uint32_t, uint32_t> &b) {
+    if (a.second < b.second) return true;
+    if (a.second == b.second) return a.first < b.first;
+    return false;
+}
 //
 //uint32_t SimpleGraph::getNoDistinctEdges() const {
 //
@@ -127,4 +127,10 @@ void SimpleGraph::readFromContiguousFile(const std::string &fileName) {
         addEdge(subject, object, predicate);
     }
     graphFile.close();
+
+    for (auto edgeLabel : edgeadj) {
+        std::sort(edgeLabel.begin(), edgeLabel.end(), sortPairs);
+        // edgeLabel now holds {1 2 3 4 5 6 7 x x x x x x}, where 'x' is indeterminate
+        edgeLabel.erase(std::unique(edgeLabel.begin(), edgeLabel.end()), edgeLabel.end());
+    }
 }
