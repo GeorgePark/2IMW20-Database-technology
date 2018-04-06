@@ -150,6 +150,7 @@ std::shared_ptr<SimpleGraph> SimpleEvaluator::evaluate_aux(RPQTree *q) {
         }
 
         if (intermediateCache.count(query) > 0) {
+            std::cout<<"Hello" << std::endl;
             return intermediateCache[query];
         } else {
             // join left with right
@@ -169,14 +170,14 @@ std::shared_ptr<SimpleGraph> SimpleEvaluator::evaluate_aux(RPQTree *q) {
         for (auto item : leaves(q)) {
             query += item->data;
         }
-    /*
+
         if (intermediateCache.count(query) > 0) {
             return intermediateCache[query];
         } else {
             // join left with right
             intermediateCache[query] = SimpleEvaluator::join(leftGraph, rightGraph);
             return intermediateCache[query];
-        }*/
+        }
         return SimpleEvaluator::join(leftGraph, rightGraph);
     }
 
