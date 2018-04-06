@@ -38,7 +38,7 @@ cardStat SimpleEvaluator::computeStats(std::shared_ptr<SimpleGraph> &g) {
         if (!g->reverse_adj[source].empty()) stats.noIn++;
     }
 
-    stats.noPaths = g->getNoEdges();
+    stats.noPaths = g->getNoDistinctEdges();
 
     return stats;
 }
@@ -47,7 +47,7 @@ std::shared_ptr<SimpleGraph>
 SimpleEvaluator::project(uint32_t projectLabel, bool inverse, std::shared_ptr<SimpleGraph> &in) {
 
     auto out = std::make_shared<SimpleGraph>(in->getNoVertices());
-    out->setNoLabels(in->getNoLabels());
+    out->setNoLabels(1);
 
     if (!inverse) {
         // going forward
@@ -58,7 +58,7 @@ SimpleEvaluator::project(uint32_t projectLabel, bool inverse, std::shared_ptr<Si
                 auto target = labelTarget.second;
 
                 if (label == projectLabel)
-                    out->addEdge(source, target, label);
+                    out->addEdge(source, target, 0);
             }
         }
     } else {
@@ -70,7 +70,7 @@ SimpleEvaluator::project(uint32_t projectLabel, bool inverse, std::shared_ptr<Si
                 auto source = labelTarget.second;
 
                 if (label == projectLabel)
-                    out->addEdge(source, target, label);
+                    out->addEdge(source, target, 0);
             }
         }
     }
@@ -102,32 +102,23 @@ SimpleEvaluator::join(std::shared_ptr<SimpleGraph> &left, std::shared_ptr<Simple
 //        //previousRTarget.clear();
 //    }
 
-    std::vector<uint16_t > previousRTarget(right->getNoVertices());
-
-    uint32_t poep = 0;
-    uint32_t poep2 = 0;
-
     for (uint32_t leftSource = 0; leftSource < left->getNoVertices(); leftSource++) {
+        //std::vector<bool> previousRTarget(right->getNoVertices());
         for (auto labelTarget : left->adj[leftSource]) {
 
             uint32_t leftTarget = labelTarget.second;
             // try to join the left target with right source
             for (auto rightLabelTarget : right->adj[leftTarget]) {
-
-                poep2++;
                 auto rightTarget = rightLabelTarget.second;
-                if (previousRTarget[rightTarget] == 0) {
-                    poep++;
+                //if (!previousRTarget[rightTarget]) {
                     out->addEdge(leftSource, rightTarget, 0);
-                    previousRTarget[rightTarget] = 1;
-                }
+                    //previousRTarget[rightTarget] = true;
+                //}
             }
         }
 
-        std::fill(previousRTarget.begin(), previousRTarget.end(), 0);
+        //std::fill(previousRTarget.begin(), previousRTarget.end(), 0);
     }
-
-    std::cout << poep2 << ", " << poep << std::endl;
 
     return out;
 }
@@ -211,7 +202,6 @@ cardStat SimpleEvaluator::evaluate(RPQTree *query) {
                 highest = current;
             }
         }
-        newQuery->print();
         auto res = evaluate_aux(newQuery);
         cache[data] = SimpleEvaluator::computeStats(res);
         return cache[data];
