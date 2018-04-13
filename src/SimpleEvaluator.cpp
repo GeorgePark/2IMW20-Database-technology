@@ -93,6 +93,7 @@ SimpleEvaluator::join(std::shared_ptr<Results> &left, std::shared_ptr<Results> &
                                                  right->result[rightSources].end());
         }
     }
+    out->removeDuplicates();
     return out;
 }
 
