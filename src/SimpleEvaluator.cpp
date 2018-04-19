@@ -118,7 +118,7 @@ std::shared_ptr<Results> SimpleEvaluator::evaluate_aux(RPQTree *q) {
             std::cerr << "Label parsing failed!" << std::endl;
             return nullptr;
         }
-/*
+
         for (auto item : leaves(q)) {
             query += item->data;
         }
@@ -130,7 +130,7 @@ std::shared_ptr<Results> SimpleEvaluator::evaluate_aux(RPQTree *q) {
             intermediateCache[query] = SimpleEvaluator::project(label, inverse, graph);
             return intermediateCache[query];
         }
-*/
+
         return SimpleEvaluator::project(label, inverse, graph);
     }
 
@@ -176,10 +176,9 @@ cardStat SimpleEvaluator::evaluate(RPQTree *query) {
                 highest = current;
             }
         }
-        auto res = evaluate_aux(newQuery);/*
+        auto res = evaluate_aux(newQuery);
         cache[data] = SimpleEvaluator::computeStats(res);
-        return cache[data];*/
-        return SimpleEvaluator::computeStats(res);
+        return cache[data];
     }
 }
 
